@@ -1,1 +1,2 @@
-# Capstone_1
+# Capstone_1 
+This project is based on a senario where I started a new role as a Data Analyst for Emporium, a growing bookstore chain that also sells technology products, art supplies, and other items both in-store and online. As part of this project, I was asked to analyze sales performance for the South Carolins territory. This repository includes my SQL analysis, pivot table, and a 10 minute presentation video that explains the main parts of the project, my process, and the final results.
