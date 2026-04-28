@@ -4,69 +4,80 @@ USE sample_sales;
 
 -- Total Revenue, start date and end date
 
-SELECT SUM(TotalRevenue) AS SouthCarolina_TotalRevenue, MIN(StartDate) AS StartDate, MAX(EndDate) AS EndDate FROM (
+SELECT SUM(Sale_Amount) AS TotalRevenue, MIN(Transaction_Date) AS StartDate, 
+MAX(Transaction_Date) AS EndDate 
+FROM store_sales
+JOIN store_locations
+ON store_sales.Store_ID = store_locations.StoreID
+WHERE State = 'South Carolina';
 
-	SELECT SUM(Sale_Amount) AS TotalRevenue, MIN(Transaction_Date) AS StartDate,
-    MAX(Transaction_Date) AS EndDate FROM store_sales
-    JOIN store_locations
-    ON store_sales.Store_ID = store_locations.StoreID
-    WHERE State = 'South Carolina'
-
-    UNION ALL
-
-    SELECT SUM(SalesTotal) AS TotalRevenue, MIN(Date) AS StartDate, MAX(Date) AS EndDate FROM online_sales
-    WHERE ShiptoState = 'South Carolina'
-) revenues;
 
 -- Month by month revenue breakdown
 
-SELECT Month, SUM(TotalRevenue) AS TotalRevenue FROM (
-	   SELECT SUM(Sale_Amount) AS TotalRevenue, Month(Transaction_Date) AS Month FROM store_sales
-       JOIN store_locations
-       ON store_sales.Store_ID = store_locations.StoreID
-       WHERE State = 'South Carolina'
-       GROUP BY Month(Transaction_Date)
+SELECT Year(Transaction_Date) AS Year, Month(Transaction_Date) AS Month, 
+SUM(Sale_Amount) AS TotalRevenue 
+FROM store_sales
+JOIN store_locations
+ON store_sales.Store_ID = store_locations.StoreID
+WHERE State = 'South Carolina'
+GROUP BY Month(Transaction_Date), Year(Transaction_Date);
        
-       UNION ALL
        
-       SELECT SUM(SalesTotal) AS TotalRevenue, Month(Date) AS Month FROM online_sales
-       WHERE ShiptoState = 'South Carolina'
-       GROUP BY Month(Date)
-)revenues
-GROUP BY Month;
-       
+-- comparison of total revenue for South Carolina and its region
 
--- comparison of total revenue for South Carolina and its region.
+SELECT Region AS Area, SUM(Sale_Amount) AS TotalRevenue 
+FROM (store_sales)
+JOIN store_locations
+ON store_sales.Store_ID = store_locations.StoreID
+JOIN management
+ON store_locations.State = management.State
+WHERE Region = 'South'
 
-SELECT 'South Region' AS Area, SUM(TotalRevenue) AS TotalRevenue FROM (
-	   SELECT SUM(Sale_Amount) AS TotalRevenue FROM store_sales
-       JOIN store_locations
-       ON store_sales.Store_ID = store_locations.StoreID
-       JOIN management
-       ON store_locations.State = management.State
-       WHERE Region = 'South'
-
-       UNION ALL
-       
-       SELECT SUM(SalesTotal) AS TotalRevenue FROM online_sales
-       JOIN management
-       ON online_sales.ShiptoState = management.State
-       WHERE Region = 'South'
-) South
 UNION ALL 
-SELECT 'South Carolina' AS Area, SUM(TotalRevenue) AS TotalRevenue FROM (
-        SELECT SUM(Sale_Amount) AS TotalRevenue FROM store_sales
-        JOIN store_locations
-        ON store_sales.Store_ID = store_locations.StoreID
-        WHERE State = 'South Carolina'
 
-        UNION ALL
-        
-        SELECT SUM(SalesTotal) AS TotalRevenue FROM online_sales
-        WHERE ShiptoState = 'South Carolina'
-) SouthCarolina;
+SELECT 'South Carolina' AS Area, SUM(Sale_Amount) AS TotalRevenue 
+FROM store_sales
+JOIN store_locations
+ON store_sales.Store_ID = store_locations.StoreID
+WHERE State = 'South Carolina';
 
--- Number of transactions per month and average transaction size by product category.
+
+-- Number of transactions per month and average transaction size by product category
+
+SELECT Year(Transaction_Date) AS Year, Month(Transaction_Date) AS Month, Categoryid, 
+Count(*) AS NumberOfTransaction, Round(Avg(Sale_Amount), 2) AS AvgTransactionSize
+FROM store_sales
+JOIN store_locations
+ON store_sales.Store_ID = store_locations.StoreID 
+JOIN products
+ON store_sales.Prod_Num = products.ProdNum
+WHERE State = 'South Carolina'
+GROUP BY Categoryid, Year(Transaction_Date), Month(Transaction_Date)
+ORDER BY NumberOfTransaction DESC, AvgTransactionSize DESC;
+
+
+-- Ranking of in-store sales performance by each store
+
+SELECT SUM(Sale_Amount) AS TotalSales, Store_ID
+FROM store_sales
+JOIN store_locations
+ON store_sales.Store_ID = store_locations.StoreID
+WHERE State = 'South Carolina' 
+GROUP BY Store_ID
+ORDER BY TotalSales;
+
+-- Recommendation for where to focus sales attention in the next quarter
+
+/* In South Carolina, there are two stores(Store 852 and Store 853). Based on the analysis, store 853 
+has higher total sales than store 852 by 25,191.44. This indicates that store 853 is performing better.
+Therefore, for the next quarter, it is recommended to focus on store 852 performance by identifying
+factors and by adapting store 853's strategies. */
+
+
+
+
+
+
 
 
 
