@@ -53,7 +53,7 @@ JOIN products
 ON store_sales.Prod_Num = products.ProdNum
 WHERE State = 'South Carolina'
 GROUP BY Categoryid, Year(Transaction_Date), Month(Transaction_Date)
-ORDER BY NumberOfTransaction DESC, AvgTransactionSize DESC;
+ORDER BY Year(Transaction_Date), Month(Transaction_Date), NumberOfTransaction DESC;
 
 
 -- Ranking of in-store sales performance by each store
@@ -70,8 +70,13 @@ ORDER BY TotalSales;
 
 /* In South Carolina, there are two stores(Store 852 and Store 853). Based on the analysis, store 853 
 has higher total sales than store 852 by 25,191.44. This indicates that store 853 is performing better.
-Therefore, for the next quarter, it is recommended to focus on store 852 performance by identifying
-factors and by adapting store 853's strategies. */
+Therefore, for the next quarter, it is recommended to focus on improving store 852 by identifying the
+factors that is affecting that store and by adapting store 853's strong strategies. 
+Additionally, both stores are performing below the avarage store revenue compared to other states. 
+This indicates an overall underperformance in South Carolina. To improve performance, it is 
+recommended to apply strategies from high performing period like August 2025. Increasing both number of 
+transactions and the average transaction size will be essential to reach above average performance. And,
+it is also recommended that South Carolina adopt best practices from higher-performing states. */
 
 
 
